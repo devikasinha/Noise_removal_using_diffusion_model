@@ -1,0 +1,40 @@
+# Localized Image Denoising using Denoising Diffusion Probabilistic Models (DDPM) on CIFAR-10
+
+This repository contains the implementation of a generative **Denoising Diffusion Probabilistic Model (DDPM)** tailored for strategic image denoising and artifact removal. Evaluated on the **CIFAR-10** dataset, this model is designed to smooth out complex noise distributions in selected image regions while preserving critical structural details, edges, and semantic features.
+
+## 🚀 Overview
+
+Traditional denoising filters often blur sharp edges or fail when handling complex, non-Gaussian noise. This project leverages the iterative reverse process of Diffusion Models to strategically reconstruct clean images from degraded versions. 
+
+### Key Features
+* **Selective Denoising:** Optimizes noise smoothing in specific regions without destroying underlying high-frequency details.
+* **U-Net Backbone:** Utilizes a modified U-Net architecture with self-attention mechanisms and time-step embeddings to predict and subtract noise iteratively.
+* **CIFAR-10 Benchmarked:** Trained and evaluated on $32 \times 32$ color images across 10 diverse classes, proving robustness across varying textures and geometries.
+
+---
+
+## 📐 Methodology
+
+The framework operates on the core principles of Markov chains consisting of two main processes:
+
+1. **Forward Process ($q$):** Gradually adds Gaussian noise to a clean image $x_0$ over $T$ timesteps according to a variance schedule $\beta_1, \beta_2, \dots, \beta_T$.
+   
+   $$q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1 - \beta_t}x_{t-1}, \beta_t\mathbf{I})$$
+
+2. **Reverse Process ($p_\theta$):** A neural network (U-Net) learns to predict the noise injected at any given timestep $t$, allowing the model to iteratively reconstruct the denoised image $x_0$ from a noisy input $x_t$.
+
+   $$p_\theta(x_{t-1} | x_t) = \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t))$$
+
+---
+
+## 🛠️ Repository Structure
+
+```text
+├── dataset/               # Scripts for CIFAR-10 download and preprocessing
+├── models/
+│   ├── unet.py            # U-Net architecture with Time Embeddings & Attention
+│   └── diffusion.py       # Forward/Reverse diffusion process logic
+├── train.py               # Training loop and loss optimization
+├── denoise_eval.py        # Evaluation script for inference and noise removal
+├── requirements.txt       # Dependencies
+└── README.md              # Project documentation
